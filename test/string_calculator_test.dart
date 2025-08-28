@@ -31,4 +31,12 @@ void main() {
       expect(add('10\n20\n30,40'), equals(100));
     });
   });
+
+  group('String Calculator step 4', () {
+    test("handles new custom delimiters in addition to comma and \n", () {
+      expect(add("//;\n1;2"), equals(3));
+      expect(add("//|\n10|20,30"), equals(60));
+      expect(add("//|\n10|20,30\n40"), equals(100));
+    });
+  });
 }
