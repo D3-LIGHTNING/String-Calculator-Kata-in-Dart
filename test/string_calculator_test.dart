@@ -24,4 +24,11 @@ void main() {
       expect(add('10,20,30,40'), equals(100));
     });
   });
+
+  group('String Calculator step 3', () {
+    test("handles new lines along with commas as separators", () {
+      expect(add('1\n2,3'), equals(6));
+      expect(add('10\n20\n30,40'), equals(100));
+    });
+  });
 }
