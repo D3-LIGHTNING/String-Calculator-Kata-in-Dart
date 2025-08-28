@@ -12,10 +12,25 @@ int add(String numbers) {
   RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
 
   List<String> numberList = numbers.split(regExp);
+  List<String> negativeNumbers = [];
   int sumOfNumbers = 0;
 
   for (String number in numberList) {
-    sumOfNumbers += int.parse(number);
+    if (number.isEmpty) continue;
+
+    int parsedNumber = int.parse(number);
+
+    if (parsedNumber < 0) {
+      negativeNumbers.add(number);
+      continue;
+    }
+
+    sumOfNumbers += parsedNumber;
+  }
+
+  if (negativeNumbers.isNotEmpty) {
+    throw Exception(
+        "negative numbers not allowed: ${negativeNumbers.join(", ")}");
   }
 
   return sumOfNumbers;

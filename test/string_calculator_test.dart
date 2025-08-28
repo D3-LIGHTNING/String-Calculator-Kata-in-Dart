@@ -39,4 +39,29 @@ void main() {
       expect(add("//|\n10|20,30\n40"), equals(100));
     });
   });
+
+  group('String Calculator step 5', () {
+    test("Throws Exception when negative numbers are passed", () {
+      expect(
+        () => add("-1,2,-3"),
+        throwsA(predicate((e) =>
+            e is Exception &&
+            e.toString().contains("negative numbers not allowed: -1, -3"))),
+      );
+
+      expect(
+        () => add("10,-20,30\n40"),
+        throwsA(predicate((e) =>
+            e is Exception &&
+            e.toString().contains("negative numbers not allowed: -20"))),
+      );
+
+      expect(
+        () => add("//;\n1,2\n-3"),
+        throwsA(predicate((e) =>
+            e is Exception &&
+            e.toString().contains("negative numbers not allowed: -3"))),
+      );
+    });
+  });
 }
