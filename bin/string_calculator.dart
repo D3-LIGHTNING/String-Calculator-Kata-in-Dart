@@ -1,5 +1,5 @@
-import 'package:string_calculator/string_calculator.dart' as string_calculator;
+import 'package:string_calculator/string_calculator.dart';
 
-void main(List<String> arguments) {
-  print('Hello world: ${string_calculator.calculate()}!');
+void main() {
+  add("1");
 }
