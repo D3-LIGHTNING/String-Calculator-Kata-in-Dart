@@ -5,7 +5,14 @@ int add(String numbers) {
 
   if (numbers.startsWith("//")) {
     String delimiter = numbers.substring(2, numbers.indexOf('\n'));
-    delimiters.add(delimiter);
+
+    if (delimiter.startsWith("[") && delimiter.endsWith("]")) {
+      String customDelimiter = delimiter.substring(1, delimiter.length - 1);
+      delimiters.add(customDelimiter);
+    } else {
+      delimiters.add(delimiter);
+    }
+
     numbers = numbers.substring(numbers.indexOf('\n') + 1);
   }
 

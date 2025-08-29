@@ -67,8 +67,15 @@ void main() {
 
   group('String Calculator step 6', () {
     test("Numbers grater than 1000 will not be added", () {
-      expect( add("2,1001\n100"), equals(102));
-      expect( add("1000,1001\n1002,3"), equals(1003));
+      expect(add("2,1001\n100"), equals(102));
+      expect(add("1000,1001\n1002,3"), equals(1003));
+    });
+  });
+
+  group('String Calculator step 7', () {
+    test("Allows delimitters of any length to be accepted as Separator", () {
+      expect(add("//[***]\n1***2***3"), equals(6));
+      expect(add("//[&&]\n1&&2&&3,4\n5"), equals(15));
     });
   });
 }
