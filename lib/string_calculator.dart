@@ -25,6 +25,8 @@ int add(String numbers) {
       continue;
     }
 
+    if (parsedNumber > 1000) continue;
+
     sumOfNumbers += parsedNumber;
   }
 

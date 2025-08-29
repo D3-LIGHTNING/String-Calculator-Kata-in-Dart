@@ -64,4 +64,11 @@ void main() {
       );
     });
   });
+
+  group('String Calculator step 6', () {
+    test("Numbers grater than 1000 will not be added", () {
+      expect( add("2,1001\n100"), equals(102));
+      expect( add("1000,1001\n1002,3"), equals(1003));
+    });
+  });
 }
