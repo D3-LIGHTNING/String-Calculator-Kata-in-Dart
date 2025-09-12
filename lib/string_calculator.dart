@@ -3,6 +3,8 @@ int add(String numbers) {
 
   List<String> delimiters = [',', '\n'];
 
+  bool multiply = false;
+
   if (numbers.startsWith("//")) {
     String delimiter = numbers.substring(2, numbers.indexOf('\n'));
 
@@ -10,6 +12,7 @@ int add(String numbers) {
       String customDelimiter = delimiter.substring(1, delimiter.length - 1);
       delimiters.add(customDelimiter);
     } else {
+      multiply = delimiter == "*";
       delimiters.add(delimiter);
     }
 
@@ -20,7 +23,7 @@ int add(String numbers) {
 
   List<String> numberList = numbers.split(regExp);
   List<String> negativeNumbers = [];
-  int sumOfNumbers = 0;
+  int sumOfNumbers = multiply ? 1 : 0;
 
   for (String number in numberList) {
     if (number.isEmpty) continue;
@@ -34,7 +37,8 @@ int add(String numbers) {
 
     if (parsedNumber > 1000) continue;
 
-    sumOfNumbers += parsedNumber;
+    sumOfNumbers =
+        multiply ? sumOfNumbers * parsedNumber : sumOfNumbers + parsedNumber;
   }
 
   if (negativeNumbers.isNotEmpty) {

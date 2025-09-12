@@ -78,4 +78,12 @@ void main() {
       expect(add("//[&&]\n1&&2&&3,4\n5"), equals(15));
     });
   });
+
+  group('String Calculator step 8', () {
+    test(
+        "If the custom delmiters is * then the numbers in between will be multiplied",
+        () {
+      expect(add("//*\n10*1*2"), equals(20));
+    });
+  });
 }
