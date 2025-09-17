@@ -1,32 +1,17 @@
-import 'package:string_calculator/delimiter_provider.dart';
+import 'package:string_calculator/number_parser.dart';
 
 class StringCalculator {
-  final List<DelimiterProvider> delimiterProviders;
+  final NumberParser numberParser;
 
-  const StringCalculator({required this.delimiterProviders});
+  const StringCalculator({required this.numberParser});
 
   int calculate(String numbers) {
     if (numbers.isEmpty) return 0;
 
-    List<String> delimiters = [];
+    ParsedNumbersOutput parsedOutput = numberParser.parseNumbers(numbers);
+    List<String> numberList = parsedOutput.numbers;
+    bool multiply = parsedOutput.multiply;
 
-    bool multiply = false;
-
-    for (DelimiterProvider provider in delimiterProviders) {
-      List<String> dl = provider.getDelimitersFromInput(numbers);
-
-      delimiters.addAll(dl);
-
-      if (provider is CustomDelimiterProvider &&
-          provider.canHandleInput(numbers)) {
-        numbers = numbers.substring(numbers.indexOf('\n') + 1);
-        multiply = dl.contains("*");
-      }
-    }
-
-    RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
-
-    List<String> numberList = numbers.split(regExp);
     List<String> negativeNumbers = [];
     int sumOfNumbers = multiply ? 1 : 0;
 
