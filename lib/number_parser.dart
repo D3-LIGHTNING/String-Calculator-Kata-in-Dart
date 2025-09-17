@@ -1,16 +1,17 @@
 import 'package:string_calculator/delimiter_provider.dart';
 
 class NumberParser {
-  final List<DelimiterProvider> delimiterProviders;
+  final List<DelimiterProvider> _delimiterProviders;
 
-  const NumberParser({required this.delimiterProviders});
+  const NumberParser({required List<DelimiterProvider> delimiterProviders})
+      : _delimiterProviders = delimiterProviders;
 
   ParsedNumbersOutput parseNumbers(String input) {
     List<String> delimiters = [];
     String numbersString = input;
     bool multiply = false;
 
-    for (DelimiterProvider provider in delimiterProviders) {
+    for (DelimiterProvider provider in _delimiterProviders) {
       List<String> dl = provider.getDelimitersFromInput(input);
 
       delimiters.addAll(dl);
@@ -33,8 +34,5 @@ class ParsedNumbersOutput {
   final List<String> numbers;
   final bool multiply;
 
-  
-
   const ParsedNumbersOutput({required this.numbers, required this.multiply});
-  
 }

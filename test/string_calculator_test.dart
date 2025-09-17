@@ -1,3 +1,4 @@
+import 'package:string_calculator/calculator_engine.dart';
 import 'package:string_calculator/delimiter_provider.dart';
 import 'package:string_calculator/number_parser.dart';
 import 'package:string_calculator/string_calculator.dart';
@@ -167,6 +168,33 @@ void main() {
                     o.multiply == false,
               ),
             );
+          },
+        );
+      },
+    );
+
+    group(
+      'String Calculator step 11, Number calculator Engine - [SOLID PRINCIPLES]',
+      () {
+        test(
+          "The calculator engine should return the sum of numbers",
+          () {
+            CalculatorEngine engine = CalculatorEngine();
+            expect(
+                engine.calculate(ParsedNumbersOutput(
+                    numbers: ["1", "2", "3", "4"], multiply: false)),
+                10);
+          },
+        );
+
+        test(
+          "The calculator engine should return the product of numbers",
+          () {
+            CalculatorEngine engine = CalculatorEngine();
+            expect(
+                engine.calculate(ParsedNumbersOutput(
+                    numbers: ["1", "2", "3", "4"], multiply: true)),
+                24);
           },
         );
       },
