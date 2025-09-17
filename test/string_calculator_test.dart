@@ -1,63 +1,82 @@
+import 'package:string_calculator/delimiter_provider.dart';
 import 'package:string_calculator/string_calculator.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('String Calculator step 1', () {
     test('returns 0 when input is empty string', () {
-      expect(add(''), equals(0));
+      StringCalculator calculator =
+          StringCalculator(delimiterProviders: [DefaultDelimiterProvider()]);
+      expect(calculator.calculate(''), equals(0));
     });
 
     test('returns the number itself when input is a single number', () {
-      expect(add('5'), equals(5));
-      expect(add('42'), equals(42));
+      StringCalculator calculator =
+          StringCalculator(delimiterProviders: [DefaultDelimiterProvider()]);
+      expect(calculator.calculate('5'), equals(5));
+      expect(calculator.calculate('42'), equals(42));
     });
 
     test('returns the sum when input has two numbers separated by comma', () {
-      expect(add('1,2'), equals(3));
-      expect(add('10,20'), equals(30));
+      StringCalculator calculator =
+          StringCalculator(delimiterProviders: [DefaultDelimiterProvider()]);
+      expect(calculator.calculate('1,2'), equals(3));
+      expect(calculator.calculate('10,20'), equals(30));
     });
   });
 
   group('String Calculator step 2', () {
     test("returns the sume of multiple numbers separated by commas", () {
-      expect(add('1,2,3,4,5'), equals(15));
-      expect(add('10,20,30,40'), equals(100));
+      StringCalculator calculator =
+          StringCalculator(delimiterProviders: [DefaultDelimiterProvider()]);
+      expect(calculator.calculate('1,2,3,4,5'), equals(15));
+      expect(calculator.calculate('10,20,30,40'), equals(100));
     });
   });
 
   group('String Calculator step 3', () {
     test("handles new lines along with commas as separators", () {
-      expect(add('1\n2,3'), equals(6));
-      expect(add('10\n20\n30,40'), equals(100));
+      StringCalculator calculator =
+          StringCalculator(delimiterProviders: [DefaultDelimiterProvider()]);
+      expect(calculator.calculate('1\n2,3'), equals(6));
+      expect(calculator.calculate('10\n20\n30,40'), equals(100));
     });
   });
 
   group('String Calculator step 4', () {
     test("handles new custom delimiters in addition to comma and \n", () {
-      expect(add("//;\n1;2"), equals(3));
-      expect(add("//|\n10|20,30"), equals(60));
-      expect(add("//|\n10|20,30\n40"), equals(100));
+      StringCalculator calculator = StringCalculator(delimiterProviders: [
+        DefaultDelimiterProvider(),
+        CustomDelimiterProvider()
+      ]);
+      expect(calculator.calculate("//;\n1;2"), equals(3));
+      expect(calculator.calculate("//|\n10|20,30"), equals(60));
+      expect(calculator.calculate("//|\n10|20,30\n40"), equals(100));
     });
   });
 
   group('String Calculator step 5', () {
     test("Throws Exception when negative numbers are passed", () {
+      StringCalculator calculator = StringCalculator(delimiterProviders: [
+        DefaultDelimiterProvider(),
+        CustomDelimiterProvider()
+      ]);
       expect(
-        () => add("-1,2,-3"),
+        () => calculator.calculate("-1,2,-3"),
         throwsA(predicate((e) =>
             e is Exception &&
             e.toString().contains("negative numbers not allowed: -1, -3"))),
       );
 
       expect(
-        () => add("10,-20,30\n40"),
+        () => calculator.calculate("10,-20,30\n40"),
         throwsA(predicate((e) =>
             e is Exception &&
             e.toString().contains("negative numbers not allowed: -20"))),
       );
 
       expect(
-        () => add("//;\n1,2\n-3"),
+        () => calculator.calculate("//;\n1,2\n-3"),
         throwsA(predicate((e) =>
             e is Exception &&
             e.toString().contains("negative numbers not allowed: -3"))),
@@ -67,15 +86,23 @@ void main() {
 
   group('String Calculator step 6', () {
     test("Numbers grater than 1000 will not be added", () {
-      expect(add("2,1001\n100"), equals(102));
-      expect(add("1000,1001\n1002,3"), equals(1003));
+      StringCalculator calculator = StringCalculator(delimiterProviders: [
+        DefaultDelimiterProvider(),
+        CustomDelimiterProvider()
+      ]);
+      expect(calculator.calculate("2,1001\n100"), equals(102));
+      expect(calculator.calculate("1000,1001\n1002,3"), equals(1003));
     });
   });
 
   group('String Calculator step 7', () {
     test("Allows delimitters of any length to be accepted as Separator", () {
-      expect(add("//[***]\n1***2***3"), equals(6));
-      expect(add("//[&&]\n1&&2&&3,4\n5"), equals(15));
+      StringCalculator calculator = StringCalculator(delimiterProviders: [
+        DefaultDelimiterProvider(),
+        CustomDelimiterProvider()
+      ]);
+      expect(calculator.calculate("//[***]\n1***2***3"), equals(6));
+      expect(calculator.calculate("//[&&]\n1&&2&&3,4\n5"), equals(15));
     });
   });
 
@@ -83,7 +110,32 @@ void main() {
     test(
         "If the custom delmiters is * then the numbers in between will be multiplied",
         () {
-      expect(add("//*\n10*1*2"), equals(20));
+      StringCalculator calculator = StringCalculator(delimiterProviders: [
+        DefaultDelimiterProvider(),
+        CustomDelimiterProvider()
+      ]);
+      expect(calculator.calculate("//*\n10*1*2"), equals(20));
     });
+
+    group(
+      'String Calculator step 9, Delimiters - [SOLID PRINCIPLES]',
+      () {
+        test(
+          "The default delimiter should return a list of preset delimiters",
+          () {
+            DelimiterProvider provider = DefaultDelimiterProvider();
+            expect(provider.getDelimitersFromInput("1\n2,3"), [',', '\n']);
+          },
+        );
+
+        test(
+          "The custom delimiter provider should return deimiters that appear after //",
+          () {
+            DelimiterProvider provider = CustomDelimiterProvider();
+            expect(provider.getDelimitersFromInput("//;\n1;2"), [';']);
+          },
+        );
+      },
+    );
   });
 }

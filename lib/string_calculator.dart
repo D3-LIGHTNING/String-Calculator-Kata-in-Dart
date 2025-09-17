@@ -1,50 +1,56 @@
-int add(String numbers) {
-  if (numbers.isEmpty) return 0;
+import 'package:string_calculator/delimiter_provider.dart';
 
-  List<String> delimiters = [',', '\n'];
+class StringCalculator {
+  final List<DelimiterProvider> delimiterProviders;
 
-  bool multiply = false;
+  const StringCalculator({required this.delimiterProviders});
 
-  if (numbers.startsWith("//")) {
-    String delimiter = numbers.substring(2, numbers.indexOf('\n'));
+  int calculate(String numbers) {
+    if (numbers.isEmpty) return 0;
 
-    if (delimiter.startsWith("[") && delimiter.endsWith("]")) {
-      String customDelimiter = delimiter.substring(1, delimiter.length - 1);
-      delimiters.add(customDelimiter);
-    } else {
-      multiply = delimiter == "*";
-      delimiters.add(delimiter);
+    List<String> delimiters = [];
+
+    bool multiply = false;
+
+    for (DelimiterProvider provider in delimiterProviders) {
+      List<String> dl = provider.getDelimitersFromInput(numbers);
+
+      delimiters.addAll(dl);
+
+      if (provider is CustomDelimiterProvider &&
+          provider.canHandleInput(numbers)) {
+        numbers = numbers.substring(numbers.indexOf('\n') + 1);
+        multiply = dl.contains("*");
+      }
     }
 
-    numbers = numbers.substring(numbers.indexOf('\n') + 1);
-  }
+    RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
 
-  RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
+    List<String> numberList = numbers.split(regExp);
+    List<String> negativeNumbers = [];
+    int sumOfNumbers = multiply ? 1 : 0;
 
-  List<String> numberList = numbers.split(regExp);
-  List<String> negativeNumbers = [];
-  int sumOfNumbers = multiply ? 1 : 0;
+    for (String number in numberList) {
+      if (number.isEmpty) continue;
 
-  for (String number in numberList) {
-    if (number.isEmpty) continue;
+      int parsedNumber = int.parse(number);
 
-    int parsedNumber = int.parse(number);
+      if (parsedNumber < 0) {
+        negativeNumbers.add(number);
+        continue;
+      }
 
-    if (parsedNumber < 0) {
-      negativeNumbers.add(number);
-      continue;
+      if (parsedNumber > 1000) continue;
+
+      sumOfNumbers =
+          multiply ? sumOfNumbers * parsedNumber : sumOfNumbers + parsedNumber;
     }
 
-    if (parsedNumber > 1000) continue;
+    if (negativeNumbers.isNotEmpty) {
+      throw Exception(
+          "negative numbers not allowed: ${negativeNumbers.join(", ")}");
+    }
 
-    sumOfNumbers =
-        multiply ? sumOfNumbers * parsedNumber : sumOfNumbers + parsedNumber;
+    return sumOfNumbers;
   }
-
-  if (negativeNumbers.isNotEmpty) {
-    throw Exception(
-        "negative numbers not allowed: ${negativeNumbers.join(", ")}");
-  }
-
-  return sumOfNumbers;
 }
