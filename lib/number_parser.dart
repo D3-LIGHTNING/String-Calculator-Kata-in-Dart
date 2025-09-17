@@ -61,5 +61,3 @@ class ParsedNumbersOutput {
     return true;
   }
 }
-
-enum OperationType { add, multiply }
