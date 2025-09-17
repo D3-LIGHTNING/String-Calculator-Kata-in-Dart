@@ -128,76 +128,55 @@ void main() {
       ]));
       expect(calculator.calculate("//*\n10*1*2"), equals(20));
     });
+  });
+  group(
+    'String Calculator step 9, Delimiters - [SOLID PRINCIPLES]',
+    () {
+      test(
+        "The default delimiter should return a list of preset delimiters",
+        () {
+          DelimiterProvider provider = DefaultDelimiterProvider();
+          expect(provider.getDelimitersFromInput("1\n2,3"), [',', '\n']);
+        },
+      );
 
-    group(
-      'String Calculator step 9, Delimiters - [SOLID PRINCIPLES]',
-      () {
-        test(
-          "The default delimiter should return a list of preset delimiters",
-          () {
-            DelimiterProvider provider = DefaultDelimiterProvider();
-            expect(provider.getDelimitersFromInput("1\n2,3"), [',', '\n']);
-          },
-        );
+      test(
+        "The custom delimiter provider should return deimiters that appear after //",
+        () {
+          DelimiterProvider provider = CustomDelimiterProvider();
+          expect(provider.getDelimitersFromInput("//;\n1;2"), [';']);
+        },
+      );
+    },
+  );
 
-        test(
-          "The custom delimiter provider should return deimiters that appear after //",
-          () {
-            DelimiterProvider provider = CustomDelimiterProvider();
-            expect(provider.getDelimitersFromInput("//;\n1;2"), [';']);
-          },
-        );
-      },
-    );
+  group(
+    'String Calculator step 10, Number parser - [SOLID PRINCIPLES]',
+    () {
+      test(
+        "Number parser should return an object with numbers [1,2,3] and operationType as add",
+        () {
+          NumberParser parser = NumberParser(delimiterProviders: [
+            DefaultDelimiterProvider(),
+            CustomDelimiterProvider()
+          ]);
 
-    group(
-      'String Calculator step 10, Number parser - [SOLID PRINCIPLES]',
-      () {
-        test(
-          "Number parser should return the list of numbers in string format",
-          () {
-            NumberParser parser = NumberParser(delimiterProviders: [
-              DefaultDelimiterProvider(),
-              CustomDelimiterProvider()
-            ]);
-            expect(
-              parser.parseNumbers("1\n2,3"),
-              predicate<ParsedNumbersOutput>(
-                (o) =>
-                    o.numbers.join(",") == ["1", "2", "3"].join(",") &&
-                    o.multiply == false,
-              ),
-            );
-          },
-        );
-      },
-    );
+          ParsedNumbersOutput output = ParsedNumbersOutput(
+              numbers: [1, 2, 3], engine: CalculatorAddEngine());
 
-    group(
+          expect(parser.parseNumbers("1\n2,3"), output);
+        },
+      );
+    },
+  );
+
+  group(
       'String Calculator step 11, Number calculator Engine - [SOLID PRINCIPLES]',
       () {
-        test(
-          "The calculator engine should return the sum of numbers",
-          () {
-            CalculatorEngine engine = CalculatorEngine();
-            expect(
-                engine.calculate(ParsedNumbersOutput(
-                    numbers: ["1", "2", "3", "4"], multiply: false)),
-                10);
-          },
-        );
+    test("Egnine returns 10 for numbers that are suppossed to be added",
+        () => expect(CalculatorAddEngine().calculate([1, 2, 3, 4]), 10));
 
-        test(
-          "The calculator engine should return the product of numbers",
-          () {
-            CalculatorEngine engine = CalculatorEngine();
-            expect(
-                engine.calculate(ParsedNumbersOutput(
-                    numbers: ["1", "2", "3", "4"], multiply: true)),
-                24);
-          },
-        );
-      },
-    );
+    test("Egnine returns 24 for numbers that are suppossed to be multiplied",
+        () => expect(CalculatorMultiplyEngine().calculate([1, 2, 3, 4]), 24));    
   });
 }

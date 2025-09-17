@@ -1,4 +1,5 @@
 import 'package:string_calculator/delimiter_provider.dart';
+import 'calculator_engine.dart';
 
 class NumberParser {
   final List<DelimiterProvider> _delimiterProviders;
@@ -9,30 +10,56 @@ class NumberParser {
   ParsedNumbersOutput parseNumbers(String input) {
     List<String> delimiters = [];
     String numbersString = input;
-    bool multiply = false;
 
     for (DelimiterProvider provider in _delimiterProviders) {
-      List<String> dl = provider.getDelimitersFromInput(input);
+      List<String> dl = provider.getDelimitersFromInput(numbersString);
 
       delimiters.addAll(dl);
 
       if (provider is CustomDelimiterProvider &&
-          provider.canHandleInput(input)) {
+          provider.canHandleInput(numbersString)) {
         numbersString =
             numbersString.substring(numbersString.indexOf('\n') + 1);
-        multiply = dl.contains("*");
       }
     }
-    RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
-    List<String> numbers = numbersString.split(regExp);
 
-    return ParsedNumbersOutput(numbers: numbers, multiply: multiply);
+    RegExp regExp = RegExp(delimiters.map(RegExp.escape).join("|"));
+
+    List<String> numbers = numbersString.split(regExp)
+      ..removeWhere((element) => element.isEmpty);
+
+    return ParsedNumbersOutput(
+        numbers: List.from(numbers.map(int.parse)),
+        engine: getEngine(delimiters));
+  }
+
+  CalculatorEngine getEngine(List<String> delimiters) {
+    if (delimiters.contains("*")) {
+      return CalculatorMultiplyEngine();
+    }
+    return CalculatorAddEngine();
   }
 }
 
 class ParsedNumbersOutput {
-  final List<String> numbers;
-  final bool multiply;
+  final List<int> numbers;
+  final CalculatorEngine engine;
 
-  const ParsedNumbersOutput({required this.numbers, required this.multiply});
+  const ParsedNumbersOutput({required this.numbers, required this.engine});
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ParsedNumbersOutput) return false;
+
+    if (numbers.length != other.numbers.length) return false;
+
+    for (int i = 0; i < numbers.length; i++) {
+      if (numbers[i] != other.numbers[i]) return false;
+    }
+
+    return true;
+  }
 }
+
+enum OperationType { add, multiply }
